@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+        integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
+        crossorigin="anonymous" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+
+<body>
+    <div class="player">
+        <!-- Dashboard -->
+        <div class="dashboard">
+            <!-- Header -->
+            <header>
+                <h4>Đang phát:</h4>
+                <h2>String 57th & 9th</h2>
+            </header>
+
+            <!-- CD -->
+            <div class="cd">
+                <div class="cd-thumb"
+                    style="background-image: url('https://i.ytimg.com/vi/jTLhQf5KJSc/maxresdefault.jpg')">
+                </div>
+            </div>
+
+            <!-- Control -->
+            <div class="control">
+                <div class="btn btn-repeat">
+                    <i class="fas fa-redo"></i>
+                </div>
+                <div class="btn btn-prev">
+                    <i class="fas fa-step-backward"></i>
+                </div>
+                <div class="btn btn-toggle-play">
+                    <i class="fas fa-pause icon-pause"></i>
+                    <i class="fas fa-play icon-play"></i>
+                </div>
+                <div class="btn btn-next">
+                    <i class="fas fa-step-forward"></i>
+                </div>
+                <div class="btn btn-random">
+                    <i class="fas fa-random"></i>
+                </div>
+            </div>
+
+            <input id="progress" class="progress" type="range" value="0" step="1" min="0" max="100">
+
+            <audio id="audio" src=""></audio>
+        </div>
+
+        <!-- Playlist -->
+        <div class="playlist">
+
+        </div>
+    </div>
+
+    <script>
+        const $ = document.querySelector.bind(document);
+        const $$ = document.querySelectorAll.bind(document);
+
+        const heading = $('header h2'); // Sửa lỗi ở đây, phải trỏ đến h2 trong header
+        const cdThumb = $('.cd-thumb');
+        const audio = $('#audio');
+        const cd = $('.cd');
+        const playBtn = $('.btn-toggle-play');
+        const player = $('.player');
+
+        const app = {
+            currentIndex: 0,
+            songs: [
+                {
+                    name: 'Paper Bouquet',
+                    singer: 'Mili',
+                    path: 'assets/musics/PaperBouquet.mp3',
+                    image: 'assets/img/PaperBouquet.png'
+                },
+                {
+                    name: 'Night Before The Destruction',
+                    singer: 'asmi',
+                    path: 'assets/musics/Night Before The Destruction.mp3',
+                    image: 'assets/img/NightBeforeTheDestruction.png'
+                },
+                {
+                    name: 'Elda',
+                    singer: 'ナナヲアカリ',
+                    path: 'assets/musics/Elda.mp3',
+                    image: 'assets/img/Elda.jpg'
+                },
+                {
+                    name: 'RTRT',
+                    singer: 'Mili',
+                    path: 'assets/musics/RTRT.mp3',
+                    image: 'assets/img/RTRT.jpg'
+                },
+                {
+                    name: 'Sleep Talk Metropolis',
+                    singer: 'Mili',
+                    path: 'assets/musics/Sleep Talk Metropolis.mp3',
+                    image: 'assets/img/Sleep Talk Merotopolis.jpg'
+                },
+                {
+                    name: 'Mortal With You',
+                    singer: 'Mili',
+                    path: 'assets/musics/Mortal With You.mp3',
+                    image: 'assets/img/MortalWithYou.jpg'
+                },
+                {
+                    name: 'Bulbel',
+                    singer: 'Mili',
+                    path: 'assets/musics/Bulbel.mp3',
+                    image: 'assets/img/Bulbel.jpg'
+                },
+                {
+                    name: 'Ga1ahad and Scientific Witchery',
+                    singer: 'Mili',
+                    path: 'assets/musics/Scientific Witchery.mp3',
+                    image: 'assets/img/ScientificWitchery.jpg'
+                }
+            ],
+            render: function () {
+                const htmls = this.songs.map(song => {
+                    return `
+                        <div class="song">
+                            <div class="thumb" 
+                                style="background-image: url('${song.image}')">
+                            </div>
+                            <div class="body">
+                                <h3 class="title">${song.name}</h3>
+                                <p class="author">${song.singer}</p>
+                            </div>
+                            <div class="option">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </div>
+                        </div>
+                `;
+                });
+                $('.playlist').innerHTML = htmls.join('');
+            },
+
+            defineProperties: function () {
+                Object.defineProperty(this, 'currentSong', {
+                    get: function () {
+                        return this.songs[this.currentIndex];
+                    }
+                });
+            },
+
+            handleEvents: function () {
+
+                const cdWidth = cd.offsetWidth;
+                // Phóng to thu nhỏ CD
+                document.onscroll = function () {
+                    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                    const newCdWidth = cdWidth - scrollTop;
+
+                    cd.style.width = newCdWidth > 0 ? newCdWidth + 'px' : '0px';
+                    cd.style.opacity = newCdWidth / cdWidth;
+
+                };
+
+                // Xử lý nút play 
+                playBtn.onclick = function () {
+                    if (audio.paused) {
+                        audio.play();
+                        player.classList.add('playing');
+                    } else {
+                        audio.pause();
+                        player.classList.remove('playing');
+                    }
+                };
+            },
+
+            loadCurrentSong: function () {
+
+                heading.textContent = this.currentSong.name;
+                cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
+                audio.src = this.currentSong.path;
+
+                console.log(heading, cdThumb, audio);
+            },
+
+            start: function () {
+                // Xử lý các sự kiện
+                this.handleEvents();
+
+                // Định nghĩa các thuộc tính cho Object
+                this.defineProperties();
+
+                // Render Playlist
+                this.render();
+
+                // Load bài đầu tiên khi chạy app
+                this.loadCurrentSong();
+            }
+        };
+
+        app.start();
+    </script>
+</body>
+
+</html>
