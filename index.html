@@ -73,12 +73,15 @@
         const progress = $('#progress');
         const nextBtn = $('.btn-next');
         const prevBtn = $('.btn-prev');
-        const randBtn = $('.btn-random')
+        const randBtn = $('.btn-random');
+        const repeatBtn = $('.btn-repeat')
         const playHistory = [];
+        let repeatRandomMode = Math.floor(Math.random() * 3) + 1; // 1: Chế độ Repeat, 2: Chế độ Random, 3: Chế độ Repeat + Random
 
         const app = {
             isPlaying: false,
             isRandom: false,
+            isRepeat: false,
             currentIndex: 0,
             songs: [
                 {
@@ -160,7 +163,7 @@
 
             handleEvents: function () {
                 const _this = this
-                
+
 
                 // CD quay/dừng khi phát/dừng nhạc
                 const cdThumbAnimate = cdThumb.animate([
@@ -207,14 +210,24 @@
 
                 // Tự động chuyển bài khi bài hiện tại phát xong
                 audio.onended = function () {
-                    player.classList.remove('playing');
                     playHistory.push(_this.currentSong);
-                    if (_this.isRandom) {
+
+                    if (repeatRandomMode === 1) {
+                        audio.play();
+                    } else if (repeatRandomMode === 2) {
                         _this.playRandomSong();
+                        audio.play();
+                    } else if (repeatRandomMode === 3) {
+                        if (Math.random() < 0.5) {
+                            audio.play();
+                        } else {
+                            _this.playRandomSong();
+                            audio.play();
+                        }
                     } else {
                         _this.nextSong();
                     }
-                    audio.play();
+
                     cdThumbAnimate.play();
                 };
 
@@ -249,34 +262,40 @@
 
                 // Quay lại bài trước
                 prevBtn.onclick = function () {
-                   
-                        // Kiểm tra xem lịch sử phát nhạc có bài hát trước đó không
-                        if (playHistory.length > 0) {
-                            const prevSong = playHistory.pop();
-                            const prevIndex = _this.songs.findIndex(song => song.name === prevSong.name);
-                            if (prevIndex !== -1) {
-                                _this.currentIndex = prevIndex;
-                                _this.loadCurrentSong();
-                                audio.play();
-                                cdThumbAnimate.play();
-                            }
-                        } else if(playHistory.length == 0){
-                            // Nếu không có lịch sử phát nhạc, chọn một bài hát ngẫu nhiên khác
-                            _this.playRandomSong();
+
+                    // Kiểm tra xem lịch sử phát nhạc có bài hát trước đó không
+                    if (playHistory.length > 0) {
+                        const prevSong = playHistory.pop();
+                        const prevIndex = _this.songs.findIndex(song => song.name === prevSong.name);
+                        if (prevIndex !== -1) {
+                            _this.currentIndex = prevIndex;
+                            _this.loadCurrentSong();
                             audio.play();
                             cdThumbAnimate.play();
                         }
-                        else {
+                    } else if (playHistory.length == 0) {
+                        // Nếu không có lịch sử phát nhạc, chọn một bài hát ngẫu nhiên khác
+                        _this.playRandomSong();
+                        audio.play();
+                        cdThumbAnimate.play();
+                    }
+                    else {
                         _this.prevSong(); // Xử lý bình thường khi không ở chế độ random
                         audio.play();
                         cdThumbAnimate.play();
                     }
                 },
 
-                // Khi nút random được bật/tắt
-                randBtn.onclick = function () {
-                    _this.isRandom = !_this.isRandom
-                    randBtn.classList.toggle('active', _this.isRandom)
+                    // Khi nút random được bật/tắt
+                    randBtn.onclick = function () {
+                        _this.isRandom = !_this.isRandom
+                        randBtn.classList.toggle('active', _this.isRandom)
+                    }
+
+                // Khi nút repeat được bật/tắt
+                repeatBtn.onclick = function () {
+                    _this.isRepeat = !_this.isRepeat
+                    repeatBtn.classList.toggle('active', _this.isRepeat)
                 }
 
             },
