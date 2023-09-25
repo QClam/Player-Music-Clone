@@ -70,8 +70,12 @@
         const cd = $('.cd');
         const playBtn = $('.btn-toggle-play');
         const player = $('.player');
+        const progress = $('#progress')
+        const nextBtn = $('.btn-next')
+        const prevBtn = $('.btn-prev')
 
         const app = {
+            isPlaying: false,
             currentIndex: 0,
             songs: [
                 {
@@ -152,6 +156,16 @@
             },
 
             handleEvents: function () {
+                const _this = this
+
+                // CD quay/dừng khi phát/dừng nhạc
+                const cdThumbAnimate = cdThumb.animate([
+                    { transform: 'rotate(360deg)' }
+                ], {
+                    duration: 15000, // x seconds
+                    iterations: Infinity
+                })
+                cdThumbAnimate.pause()
 
                 const cdWidth = cd.offsetWidth;
                 // Phóng to thu nhỏ CD
@@ -162,18 +176,63 @@
                     cd.style.width = newCdWidth > 0 ? newCdWidth + 'px' : '0px';
                     cd.style.opacity = newCdWidth / cdWidth;
 
-                };
+                }
 
                 // Xử lý nút play 
                 playBtn.onclick = function () {
-                    if (audio.paused) {
-                        audio.play();
-                        player.classList.add('playing');
+                    if (_this.isPlaying) {
+                        audio.pause();                      
+                        cdThumbAnimate.pause()
                     } else {
-                        audio.pause();
-                        player.classList.remove('playing');
+                        audio.play();
+                        cdThumbAnimate.play()
                     }
+                }
+
+                //Khi bài hát được phát
+                audio.onplay = function () {
+                    _this.isPlaying = true
+                    player.classList.add('playing');
+                }
+
+                 //Khi bài hát dừng
+                 audio.onpause = function () {
+                    _this.isPlaying = false
+                    player.classList.remove('playing');
+                }
+
+                audio.onended = function () {
+                    player.classList.remove('playing');
+                    // Tại đây, bạn có thể cập nhật nút play thành pause nếu cần
                 };
+
+                // Khi tiến độ bài hát thay đổi 
+                audio.ontimeupdate = function () {
+                    if (audio.duration) {
+                        const progressPercent = Math.floor(audio.currentTime * 100 / audio.duration)
+                        progress.value = progressPercent
+                    }
+                }
+
+                //Xử lý khi tua nhạc
+                progress.oninput = function (e) {
+                    const seekTime = audio.duration / 100 * e.target.value
+                    audio.currentTime = seekTime
+                }
+
+                // Chuyển bài tiếp theo
+                nextBtn.onclick = function () {
+                    _this.nextSong()
+                    audio.play()
+                    cdThumbAnimate.play()
+                }
+
+                // Quay lại bài trước
+                prevBtn.onclick = function () {
+                    _this.prevSong()
+                    audio.play()
+                    cdThumbAnimate.play()
+                }
             },
 
             loadCurrentSong: function () {
@@ -182,7 +241,23 @@
                 cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
                 audio.src = this.currentSong.path;
 
-                console.log(heading, cdThumb, audio);
+                // console.log(heading, cdThumb, audio);
+            },
+
+            nextSong: function () {
+                this.currentIndex++
+                if(this.currentIndex >= this.songs.length){
+                    this.currentIndex = 0
+                }
+                this.loadCurrentSong()
+            },
+
+            prevSong: function () {
+                this.currentIndex--
+                if(this.currentIndex < 0){
+                    this.currentIndex = this.songs.length - 1
+                }
+                this.loadCurrentSong()
             },
 
             start: function () {
