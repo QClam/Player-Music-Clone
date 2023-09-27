@@ -224,9 +224,11 @@
                         _this.loadCurrentSong(); // Thực hiện repeat bài hát hiện tại
                     } else if (_this.isRandom) {
                         _this.playRandomSong(); // Random lại bài hát
-                    } else {
+                    } else if(_this.isRepeat && _this.isRandom){
                         _this.loadCurrentSong(); // Thực hiện repeat bài hát hiện tại, vì ai bật nút repeat đều có ý định là sẽ nghe lại bài hát
                         // nên random cũng thừa.
+                    } else {
+                        _this.nextSong();
                     }
 
                     audio.play();
