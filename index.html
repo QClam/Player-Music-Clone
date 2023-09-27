@@ -224,7 +224,7 @@
                         _this.loadCurrentSong(); // Thực hiện repeat bài hát hiện tại
                     } else if (_this.isRandom) {
                         _this.playRandomSong(); // Random lại bài hát
-                    } else if(_this.isRepeat && _this.isRandom){
+                    } else if (_this.isRepeat && _this.isRandom) {
                         _this.loadCurrentSong(); // Thực hiện repeat bài hát hiện tại, vì ai bật nút repeat đều có ý định là sẽ nghe lại bài hát
                         // nên random cũng thừa.
                     } else {
@@ -364,9 +364,19 @@
             },
 
             loadConfig: function () {
-                this.isRandom = this.config.isRandom === false
-                this.isRepeat = this.config.isRepeat === false
+                this.isRandom = this.config.isRandom === true; // Chuyển đổi thành giá trị boolean
+                this.isRepeat = this.config.isRepeat === true; // Chuyển đổi thành giá trị boolean
+
+                // Nếu giá trị không được lưu trữ trong localStorage, hoặc là null hoặc undefined,
+                // thì đặt cả hai nút là false (tắt).
+                if (this.config.isRandom === null || this.config.isRandom === undefined) {
+                    this.isRandom = false;
+                }
+                if (this.config.isRepeat === null || this.config.isRepeat === undefined) {
+                    this.isRepeat = false;
+                }
             },
+
 
             nextSong: function () {
                 this.currentIndex++
@@ -419,4 +429,5 @@
         app.start();
     </script>
 </body>
+
 </html>
