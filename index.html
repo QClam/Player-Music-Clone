@@ -362,7 +362,6 @@
                 heading.textContent = this.currentSong.name;
                 cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
                 audio.src = this.currentSong.path;
-                this.setConfig("currentIndex", this.currentIndex)
 
                 // console.log(heading, cdThumb, audio);
             },
@@ -370,7 +369,6 @@
             loadConfig: function () {
                 this.isRandom = this.config.isRandom
                 this.isRepeat = this.config.isRepeat
-                this.currentIndex = this.config.currentIndex
             },
 
             nextSong: function () {
