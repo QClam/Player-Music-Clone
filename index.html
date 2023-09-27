@@ -327,7 +327,6 @@
                 }
 
                 // Khi click vào bài hát trong danh sách
-                // Khi click vào bài hát trong danh sách
                 playlist.onclick = function (e) {
                     const songNode = e.target.closest('.song:not(.active)');
                     if (songNode) {
@@ -349,12 +348,8 @@
                                 songNode.classList.remove('song-scroll-animation');
                             }
                         }, 15);
-
-
                     }
                 };
-
-
             },
 
             loadCurrentSong: function () {
@@ -422,5 +417,4 @@
         app.start();
     </script>
 </body>
-
 </html>
