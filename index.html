@@ -288,9 +288,9 @@
 
                 // Quay lại bài trước
                 prevBtn.onclick = function () {
-                    if (!_this.isRandom) { // Nếu không ở chế độ ngẫu nhiên
-                        _this.prevSong(); // Quay lại bài trước trong danh sách
-                    } else {
+                    // if (!_this.isRandom) { // Nếu không ở chế độ ngẫu nhiên
+                    //     _this.prevSong(); // Quay lại bài trước trong danh sách
+                    // } else {
                         // Nếu ở chế độ ngẫu nhiên và có lịch sử phát nhạc
                         if (playHistory.length > 0) {
                             const previousSong = playHistory.pop(); // Lấy bài hát trước đó từ lịch sử
@@ -300,7 +300,7 @@
                                 _this.loadCurrentSong();
                             }
                         }
-                    }
+                    
 
                     audio.play();
                     cdThumbAnimate.play();
